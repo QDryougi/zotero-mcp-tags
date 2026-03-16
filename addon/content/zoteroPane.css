@@ -1,0 +1,19 @@
+.mcp-tags-pref-note {
+  margin: 0.5em 0 0;
+}
+
+#__addonRef__-endpoint,
+#__addonRef__-config {
+  white-space: pre-wrap;
+  border: 1px solid var(--material-border, #d7d7db);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 4px 0 12px;
+  background: color-mix(in srgb, currentColor 3%, transparent);
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+}
+
+#__addonRef__-server-status {
+  margin: 0 0 8px;
+}

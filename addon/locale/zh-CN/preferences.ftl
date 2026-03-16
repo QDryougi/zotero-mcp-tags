@@ -1,0 +1,12 @@
+pref-title = Zotero MCP 标签
+pref-intro = 这个插件适合和 zotero-mcp 一起使用。先用 zotero-mcp 检索文献，再把返回的 itemKey 传给本插件的 write_tag 工具做批量打标签。
+pref-enable =
+    .label = 启用本地 MCP 标签服务
+pref-port = 端口
+pref-allow-remote =
+    .label = 允许远程访问（不推荐）
+pref-status-heading = 服务状态
+pref-endpoint-label = MCP 地址
+pref-config-label = MCP 客户端配置示例
+pref-help = 工具名为 write_tag，支持 add / remove / set，支持 itemKey 或 itemKeys，并返回每个条目的标签变更结果。
+pref-build = { $name } build { $version } { $time }

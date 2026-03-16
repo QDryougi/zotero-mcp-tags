@@ -1,0 +1,12 @@
+pref-title = Zotero MCP Tags
+pref-intro = Run this plugin together with zotero-mcp. Let zotero-mcp search the library, then send the returned itemKey values to this plugin's write_tag tool for batch tagging.
+pref-enable =
+    .label = Enable local MCP tagging server
+pref-port = Port
+pref-allow-remote =
+    .label = Allow remote access (not recommended)
+pref-status-heading = Server Status
+pref-endpoint-label = MCP endpoint
+pref-config-label = Example MCP client config
+pref-help = Tool: write_tag. Supports add / remove / set, itemKey or itemKeys, and returns per-item before/after tags for verification.
+pref-build = { $name } build { $version } { $time }
