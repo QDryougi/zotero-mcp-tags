@@ -14,6 +14,11 @@ It is designed to work alongside [`zotero-mcp`](https://github.com/cookjohn/zote
 - pass the returned `itemKey` values to this plugin
 - call `write_tag` to batch add, remove, or replace tags
 
+This project is explicitly inspired by and intended to complement:
+
+- [`cookjohn/zotero-mcp`](https://github.com/cookjohn/zotero-mcp) for Zotero search, retrieval, and MCP integration patterns
+- [`windingwind/zotero-actions-tags`](https://github.com/windingwind/zotero-actions-tags) for Zotero tag operation ideas
+
 ## Why this plugin exists
 
 `zotero-mcp` is powerful and broad. This project focuses on one narrow workflow: safe, fast batch tagging after search.
@@ -184,6 +189,13 @@ Default values are defined in `addon/prefs.js`.
 - built for Zotero 7 bootstrapped plugin architecture
 - uses `zotero-plugin-scaffold` for build and packaging
 - uses `zotero-plugin-toolkit` and `zotero-types`
+
+## Credits
+
+- Author: ryougi
+- Development and implementation support: OpenCode
+- Inspired by `zotero-mcp` by cookjohn
+- Built from `zotero-plugin-template` by windingwind
 
 ## License
 

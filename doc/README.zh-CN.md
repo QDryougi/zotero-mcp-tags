@@ -14,6 +14,11 @@
 - 把返回的 `itemKey` 传给这个插件
 - 调用 `write_tag` 批量添加、移除或替换标签
 
+这个项目明确参考并补充了以下工作：
+
+- [`cookjohn/zotero-mcp`](https://github.com/cookjohn/zotero-mcp)，用于 Zotero 检索、读取与 MCP 集成思路
+- [`windingwind/zotero-actions-tags`](https://github.com/windingwind/zotero-actions-tags)，用于 Zotero 标签操作思路
+
 ## 为什么要做这个插件
 
 `zotero-mcp` 功能很强也很全面，但这个项目只专注一件事：在检索之后，安全而高效地批量打标签。
@@ -184,6 +189,13 @@ npm run start
 - 基于 Zotero 7 bootstrapped plugin 架构
 - 使用 `zotero-plugin-scaffold` 进行构建与打包
 - 使用 `zotero-plugin-toolkit` 与 `zotero-types`
+
+## 致谢
+
+- 作者：ryougi
+- 开发与实现支持：OpenCode
+- 设计思路参考：cookjohn 的 `zotero-mcp`
+- 插件模板来源：windingwind 的 `zotero-plugin-template`
 
 ## 许可证
 
