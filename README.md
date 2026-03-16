@@ -6,6 +6,8 @@
 
 `Zotero MCP Tags` is a lightweight Zotero 7 plugin that exposes a dedicated MCP server for batch tagging.
 
+[English](README.md) | [简体中文](doc/README.zh-CN.md)
+
 It is designed to work alongside [`zotero-mcp`](https://github.com/cookjohn/zotero-mcp):
 
 - use `zotero-mcp` to search, inspect, and filter items
