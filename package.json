@@ -1,7 +1,7 @@
 {
   "name": "zotero-mcp-tags",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Zotero 7 plugin that exposes a lightweight MCP server for batch tagging items, designed to work alongside zotero-mcp.",
   "config": {
     "addonName": "Zotero MCP Tags",

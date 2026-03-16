@@ -1,7 +1,6 @@
-export type WriteTagAction = "add" | "remove" | "set";
+export type TagAction = "add" | "remove" | "set";
 
-export interface WriteTagArgs {
-  action: WriteTagAction;
+export interface TagToolArgs {
   itemKey?: string;
   itemKeys?: string[];
   tags: string[];
@@ -23,8 +22,20 @@ interface ItemResult {
 }
 
 export class TagService {
-  public async writeTags(args: WriteTagArgs) {
-    const normalized = this.normalizeArgs(args);
+  public async addTags(args: TagToolArgs) {
+    return this.runAction("add", args);
+  }
+
+  public async removeTags(args: TagToolArgs) {
+    return this.runAction("remove", args);
+  }
+
+  public async setTags(args: TagToolArgs) {
+    return this.runAction("set", args);
+  }
+
+  private async runAction(action: TagAction, args: TagToolArgs) {
+    const normalized = this.normalizeArgs(action, args);
     const results: ItemResult[] = [];
 
     for (const itemKey of normalized.itemKeys) {
@@ -83,11 +94,7 @@ export class TagService {
     };
   }
 
-  private normalizeArgs(args: WriteTagArgs) {
-    if (!args?.action || !["add", "remove", "set"].includes(args.action)) {
-      throw new Error("action must be one of add, remove, or set");
-    }
-
+  private normalizeArgs(action: TagAction, args: TagToolArgs) {
     const itemKeys = Array.from(
       new Set([
         ...(args.itemKey ? [args.itemKey] : []),
@@ -103,14 +110,14 @@ export class TagService {
       new Set((args.tags || []).map((tag) => tag.trim())),
     ).filter((tag) => tag.length > 0);
 
-    if (tags.length === 0 && args.action !== "set") {
+    if (tags.length === 0 && action !== "set") {
       throw new Error(
         "tags must contain at least one non-empty tag for add/remove",
       );
     }
 
     return {
-      action: args.action,
+      action,
       itemKeys,
       tags,
       libraryID:
@@ -142,7 +149,7 @@ export class TagService {
 
   private applyAction(
     item: any,
-    action: WriteTagAction,
+    action: TagAction,
     tags: string[],
     tagType: 0 | 1,
     beforeTags: string[],

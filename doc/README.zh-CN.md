@@ -12,7 +12,7 @@
 
 - 用 `zotero-mcp` 搜索、查看和筛选条目
 - 把返回的 `itemKey` 传给这个插件
-- 调用 `write_tag` 批量添加、移除或替换标签
+- 调用 `add_tag`、`remove_tag` 或 `set_tag` 批量更新标签
 
 这个项目明确参考并补充了以下工作：
 
@@ -33,7 +33,7 @@
 ## 功能特性
 
 - 基于 `streamable_http` 的本地 MCP 服务
-- 一个聚焦工具：`write_tag`
+- 三个聚焦工具：`add_tag`、`remove_tag`、`set_tag`
 - 支持 `add`、`remove`、`set`
 - 支持 `itemKey` 和 `itemKeys`
 - 支持可选 `libraryID`
@@ -45,14 +45,14 @@
 
 1. 用 `zotero-mcp` 搜索你的文献库。
 2. 收集搜索结果中的 `itemKey`。
-3. 把这些 key 传给 `Zotero MCP Tags` 的 `write_tag`。
+3. 把这些 key 传给 `Zotero MCP Tags` 的 `add_tag`、`remove_tag` 或 `set_tag`。
 4. 检查返回的逐条结果。
 
 一个典型 Agent 工作流：
 
 - 用 `zotero-mcp` 搜索 `transformer interpretability` 相关文献
 - 收集匹配条目的 `itemKey`
-- 用 `write_tag` 调用 `action: "add"`，并添加 `tags: ["to-read", "interpretability"]`
+- 用 `add_tag` 添加 `tags: ["to-read", "interpretability"]`
 
 ## MCP 地址
 
@@ -70,15 +70,14 @@ http://127.0.0.1:23124/mcp/status
 
 ## 工具
 
-### `write_tag`
+### `add_tag`
 
-用于对 Zotero 条目进行批量添加、移除或替换标签。
+用于给 Zotero 条目批量添加标签。
 
 输入示例：
 
 ```json
 {
-  "action": "add",
   "itemKeys": ["ABCD1234", "EFGH5678"],
   "tags": ["to-read", "llm"],
   "libraryID": 1,
@@ -88,12 +87,24 @@ http://127.0.0.1:23124/mcp/status
 
 支持字段：
 
-- `action`: `add` | `remove` | `set`
 - `itemKey`: 单个条目 key
 - `itemKeys`: 多个条目 key
 - `tags`: 标签数组
 - `libraryID`: 可选的 Zotero 文库 ID
 - `tagType`: 可选，`0` 普通标签，`1` 自动标签
+
+### `remove_tag`
+
+用于批量移除标签。
+
+- 这是破坏性操作，建议在 OpenCode 中配置为 `ask`
+
+### `set_tag`
+
+用于用新标签列表整体替换旧标签。
+
+- 这同样是破坏性操作，因为它会先删除旧标签
+- 也建议在 OpenCode 中配置为 `ask`
 
 典型返回结构：
 
@@ -125,14 +136,18 @@ http://127.0.0.1:23124/mcp/status
       "type": "remote",
       "url": "http://127.0.0.1:23120/mcp",
       "enabled": true,
-      "timeout": 10000
+      "timeout": 60000
     },
     "zotero_tags": {
       "type": "remote",
       "url": "http://127.0.0.1:23124/mcp",
       "enabled": true,
-      "timeout": 10000
+      "timeout": 60000
     }
+  },
+  "permission": {
+    "zotero_tags_remove_tag": "ask",
+    "zotero_tags_set_tag": "ask"
   }
 }
 ```
@@ -196,6 +211,10 @@ npm run start
 - 开发与实现支持：OpenCode
 - 设计思路参考：cookjohn 的 `zotero-mcp`
 - 插件模板来源：windingwind 的 `zotero-plugin-template`
+
+## 更新日志
+
+- 见 `CHANGELOG.md`
 
 ## 许可证
 

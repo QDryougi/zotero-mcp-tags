@@ -12,7 +12,7 @@ It is designed to work alongside [`zotero-mcp`](https://github.com/cookjohn/zote
 
 - use `zotero-mcp` to search, inspect, and filter items
 - pass the returned `itemKey` values to this plugin
-- call `write_tag` to batch add, remove, or replace tags
+- call `add_tag`, `remove_tag`, or `set_tag` to batch update tags
 
 This project is explicitly inspired by and intended to complement:
 
@@ -33,7 +33,7 @@ That split makes it easier to:
 ## Features
 
 - local MCP server using `streamable_http`
-- one focused tool: `write_tag`
+- three focused tools: `add_tag`, `remove_tag`, `set_tag`
 - supports `add`, `remove`, and `set`
 - supports `itemKey` and `itemKeys`
 - optional `libraryID`
@@ -45,14 +45,14 @@ That split makes it easier to:
 
 1. Use `zotero-mcp` to search your library.
 2. Collect the resulting `itemKey` values.
-3. Send those keys to `Zotero MCP Tags` via `write_tag`.
+3. Send those keys to `Zotero MCP Tags` via `add_tag`, `remove_tag`, or `set_tag`.
 4. Inspect the returned per-item results.
 
 Example agent workflow:
 
 - search papers about `transformer interpretability` using `zotero-mcp`
 - collect matching `itemKey`s
-- call `write_tag` with `action: "add"` and `tags: ["to-read", "interpretability"]`
+- call `add_tag` with `tags: ["to-read", "interpretability"]`
 
 ## MCP endpoint
 
@@ -70,15 +70,14 @@ http://127.0.0.1:23124/mcp/status
 
 ## Tool
 
-### `write_tag`
+### `add_tag`
 
-Batch add, remove, or replace tags on Zotero items.
+Batch add tags to Zotero items.
 
 Input:
 
 ```json
 {
-  "action": "add",
   "itemKeys": ["ABCD1234", "EFGH5678"],
   "tags": ["to-read", "llm"],
   "libraryID": 1,
@@ -88,12 +87,25 @@ Input:
 
 Supported fields:
 
-- `action`: `add` | `remove` | `set`
 - `itemKey`: single item key
 - `itemKeys`: multiple item keys
 - `tags`: tag list
 - `libraryID`: optional Zotero library ID
 - `tagType`: optional, `0` regular tag or `1` automatic tag
+
+### `remove_tag`
+
+Batch remove tags from Zotero items.
+
+- intended for destructive tag cleanup
+- should be configured with `permission: "ask"` in OpenCode
+
+### `set_tag`
+
+Replace all existing tags on Zotero items with a new tag list.
+
+- this is also destructive because it removes old tags first
+- should be configured with `permission: "ask"` in OpenCode
 
 Typical response shape:
 
@@ -125,14 +137,18 @@ Typical response shape:
       "type": "remote",
       "url": "http://127.0.0.1:23120/mcp",
       "enabled": true,
-      "timeout": 10000
+      "timeout": 60000
     },
     "zotero_tags": {
       "type": "remote",
       "url": "http://127.0.0.1:23124/mcp",
       "enabled": true,
-      "timeout": 10000
+      "timeout": 60000
     }
+  },
+  "permission": {
+    "zotero_tags_remove_tag": "ask",
+    "zotero_tags_set_tag": "ask"
   }
 }
 ```
@@ -196,6 +212,10 @@ Default values are defined in `addon/prefs.js`.
 - Development and implementation support: OpenCode
 - Inspired by `zotero-mcp` by cookjohn
 - Built from `zotero-plugin-template` by windingwind
+
+## Changelog
+
+- See `CHANGELOG.md`
 
 ## License
 

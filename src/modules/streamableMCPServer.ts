@@ -21,7 +21,7 @@ interface MCPResponse {
 export class StreamableMCPServer {
   private readonly serverInfo = {
     name: "zotero-mcp-tags",
-    version: "0.1.0",
+    version: "0.1.1",
   };
 
   private initialized = false;
@@ -83,7 +83,7 @@ export class StreamableMCPServer {
       initialized: this.initialized,
       serverInfo: this.serverInfo,
       protocolVersion: "2024-11-05",
-      tools: ["write_tag"],
+      tools: ["add_tag", "remove_tag", "set_tag"],
     };
   }
 
@@ -138,18 +138,12 @@ export class StreamableMCPServer {
         return this.createResponse(request.id ?? null, {
           tools: [
             {
-              name: "write_tag",
+              name: "add_tag",
               description:
-                "Batch add, remove, or replace tags on Zotero items. Designed to work with itemKey values returned by zotero-mcp search tools.",
+                "Batch add tags to Zotero items. Designed to work with itemKey values returned by zotero-mcp search tools.",
               inputSchema: {
                 type: "object",
                 properties: {
-                  action: {
-                    type: "string",
-                    enum: ["add", "remove", "set"],
-                    description:
-                      "add keeps existing tags, remove deletes specific tags, set replaces all tags",
-                  },
                   itemKey: {
                     type: "string",
                     description: "Single Zotero item key",
@@ -163,7 +157,7 @@ export class StreamableMCPServer {
                   tags: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Tags to add, remove, or set",
+                    description: "Tags to add",
                   },
                   libraryID: {
                     type: "number",
@@ -177,8 +171,74 @@ export class StreamableMCPServer {
                       "0 for regular tags, 1 for automatic tags. Defaults to 0.",
                   },
                 },
-                required: ["action", "tags"],
-                anyOf: [{ required: ["itemKey"] }, { required: ["itemKeys"] }],
+                required: ["tags"],
+              },
+            },
+            {
+              name: "remove_tag",
+              description:
+                "Batch remove tags from Zotero items. This is destructive and should require user confirmation in clients like OpenCode.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  itemKey: {
+                    type: "string",
+                    description: "Single Zotero item key",
+                  },
+                  itemKeys: {
+                    type: "array",
+                    items: { type: "string" },
+                    description:
+                      "Multiple Zotero item keys, ideal for batch tag cleanup after zotero-mcp search results",
+                  },
+                  tags: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Tags to remove",
+                  },
+                  libraryID: {
+                    type: "number",
+                    description:
+                      "Optional library ID. If omitted, the plugin searches all available libraries.",
+                  },
+                },
+                required: ["tags"],
+              },
+            },
+            {
+              name: "set_tag",
+              description:
+                "Replace all existing tags on Zotero items with the provided list. This is destructive and should require user confirmation in clients like OpenCode.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  itemKey: {
+                    type: "string",
+                    description: "Single Zotero item key",
+                  },
+                  itemKeys: {
+                    type: "array",
+                    items: { type: "string" },
+                    description:
+                      "Multiple Zotero item keys, ideal for batch retagging after zotero-mcp search results",
+                  },
+                  tags: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Complete replacement tag list",
+                  },
+                  libraryID: {
+                    type: "number",
+                    description:
+                      "Optional library ID. If omitted, the plugin searches all available libraries.",
+                  },
+                  tagType: {
+                    type: "number",
+                    description:
+                      "0 for regular tags, 1 for automatic tags. Defaults to 0.",
+                  },
+                },
+                required: ["tags"],
               },
             },
           ],
@@ -198,16 +258,8 @@ export class StreamableMCPServer {
     const toolName = request.params?.name;
     const args = request.params?.arguments || {};
 
-    if (toolName !== "write_tag") {
-      return this.createError(
-        request.id ?? null,
-        -32601,
-        `Unknown tool: ${String(toolName)}`,
-      );
-    }
-
     try {
-      const result = await tagService.writeTags(args);
+      const result = await this.callTagTool(toolName, args);
       return this.createResponse(request.id ?? null, {
         content: [
           {
@@ -224,6 +276,19 @@ export class StreamableMCPServer {
         -32603,
         error instanceof Error ? error.message : String(error),
       );
+    }
+  }
+
+  private async callTagTool(name: string, args: any) {
+    switch (name) {
+      case "add_tag":
+        return tagService.addTags(args);
+      case "remove_tag":
+        return tagService.removeTags(args);
+      case "set_tag":
+        return tagService.setTags(args);
+      default:
+        throw new Error(`Unknown tool: ${String(name)}`);
     }
   }
 
